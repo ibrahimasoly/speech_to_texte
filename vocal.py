@@ -1,8 +1,6 @@
 import streamlit as st
 import speech_recognition as sr
-import sounddevice as sd
-import numpy as np
-from scipy.io.wavfile import write
+import time
 
 # Initialisation
 recognizer = sr.Recognizer()
@@ -30,26 +28,14 @@ transcription_output = st.empty()
 pause = st.button("Pause")
 resume = st.button("Reprendre")
 
-# Fonction pour enregistrer l'audio avec sounddevice
-def record_audio(duration=5, samplerate=44100):
-    st.write("Enregistrement en cours... Parlez maintenant.")
-    audio_data = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=1, dtype='int16')
-    sd.wait()  # Attend que l'enregistrement se termine
-    return samplerate, audio_data
-
 # Fonction de transcription
 def transcribe_speech():
     try:
-        duration = st.slider("Durée de l'enregistrement (secondes) :", 1, 10, 5)
-        samplerate, audio_data = record_audio(duration)
-        
-        # Sauvegarder temporairement l'audio pour le traitement par SpeechRecognition
-        wav_file = "temp_audio.wav"
-        write(wav_file, samplerate, audio_data)
-        
-        # Charger le fichier audio dans SpeechRecognition
-        with sr.AudioFile(wav_file) as source:
-            audio = recognizer.record(source)
+        with sr.Microphone() as source:
+            st.write("En attente de votre voix... Parlez maintenant.")
+            recognizer.adjust_for_ambient_noise(source)  # Ajuste le bruit de fond
+            audio = recognizer.listen(source)
+
             if api_choice == "Google":
                 transcription = recognizer.recognize_google(audio, language=languages[language])
             elif api_choice == "Sphinx":
@@ -88,3 +74,4 @@ if not st.session_state["paused"]:
 
         if st.button("Enregistrer la transcription"):
             save_transcription(transcription)
+
