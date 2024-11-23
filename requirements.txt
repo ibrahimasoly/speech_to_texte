@@ -1,3 +1,4 @@
 streamlit
 SpeechRecognition
-PyAudio
+streamlit
+pyaudio @ https://your-hosted-location.com/pyaudio-0.2.14-cp312-cp312m-manylinux.whl
