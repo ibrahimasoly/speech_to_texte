@@ -2,3 +2,4 @@ streamlit
 SpeechRecognition
 numpy
 pyaudio
+path_to_downloaded_wheel.whl
